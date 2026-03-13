@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion Massar</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
     <style>
         body { font-family: sans-serif; background-color: #F5F3ED; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
@@ -37,13 +37,26 @@
     </div>
 
     <script>
-        // 1. Connexion à ta base de données Supabase
-        const supabaseUrl = 'https://exnrseyyxzqjhlabtesu.supabase.co';
-        const supabaseKey = 'sb_publishable_aAQhzHqknK1UKWRiLJur0w_E7jAXoDW';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        let supabase = null;
 
-        // 2. Fonction pour créer un compte
+        // Fonction pour démarrer la base de données SANS faire planter la page
+        function initSupabase() {
+            if (!window.supabase) {
+                alert("🚨 BLOCAGE DÉTECTÉ : Ton téléphone ou ton réseau (Wi-Fi) bloque l'accès à la base de données Supabase. Essaie de passer en 4G ou de changer de navigateur (utilise Chrome).");
+                return false;
+            }
+            if (!supabase) {
+                const supabaseUrl = 'https://exnrseyyxzqjhlabtesu.supabase.co';
+                const supabaseKey = 'sb_publishable_aAQhzHqknK1UKWRiLJur0w_E7jAXoDW';
+                supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+            }
+            return true;
+        }
+
         async function creerCompte() {
+            // On vérifie que la base est accessible avant de continuer
+            if (!initSupabase()) return;
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
@@ -51,6 +64,8 @@
                 alert("Veuillez remplir l'email et le mot de passe.");
                 return;
             }
+
+            alert("Connexion à la base de données en cours pour " + email + "...");
 
             const { data, error } = await supabase.auth.signUp({
                 email: email,
@@ -58,14 +73,15 @@
             });
 
             if (error) {
-                alert("Erreur Supabase (Création) : " + error.message);
+                alert("Erreur (Création) : " + error.message);
             } else {
-                alert("Compte créé avec succès ! Tu peux maintenant te connecter.");
+                alert("✅ Compte créé avec succès ! Tu peux maintenant te connecter.");
             }
         }
 
-        // 3. Fonction pour se connecter
         async function seConnecter() {
+            if (!initSupabase()) return;
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
@@ -74,15 +90,17 @@
                 return;
             }
 
+            alert("Connexion en cours pour " + email + "...");
+
             const { data, error } = await supabase.auth.signInWithPassword({
                 email: email,
                 password: password,
             });
 
             if (error) {
-                alert("Erreur Supabase (Connexion) : " + error.message);
+                alert("Erreur (Connexion) : " + error.message);
             } else {
-                alert("Connexion réussie ! Bienvenue " + data.user.email);
+                alert("✅ Connexion réussie ! Bienvenue " + data.user.email);
             }
         }
     </script>
