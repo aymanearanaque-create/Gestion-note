@@ -13,9 +13,9 @@
 
     <style>
         :root {
-            --bg-color: #F5F3ED; /* Beige clair */
+            --bg-color: #F5F3ED; 
             --card-bg: #FFFFFF;
-            --primary: #4A5D4E; /* Vert Olive */
+            --primary: #4A5D4E; 
             --primary-hover: #3A4A3D;
             --text-main: #1F2937;
             --text-muted: #6B7280;
@@ -48,62 +48,29 @@
             width: 100%;
         }
 
-        /* --- Visibilité des Sections (Correction de l'écran blanc) --- */
-        #auth-section {
-            display: flex; /* Visible par défaut */
-            animation: fadeIn 0.5s ease;
-        }
-        
-        #app-section {
-            display: none; /* Masqué par défaut */
-            animation: fadeIn 0.5s ease;
-        }
+        /* --- Visibilité par défaut --- */
+        #auth-section { display: flex; animation: fadeIn 0.5s ease; }
+        #app-section { display: none; animation: fadeIn 0.5s ease; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- Section Auth --- */
-        .auth-wrapper {
-            justify-content: center;
-            align-items: center;
-            min-height: 80vh;
-        }
-
-        .auth-card {
-            background: var(--card-bg);
-            padding: 3rem;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-        }
-
+        /* --- Auth Section --- */
+        .auth-wrapper { justify-content: center; align-items: center; min-height: 80vh; }
+        .auth-card { background: var(--card-bg); padding: 3rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); width: 100%; max-width: 450px; text-align: center; }
         .auth-card h1 { color: var(--primary); font-size: 2rem; margin-bottom: 0.5rem; }
         .auth-card p { color: var(--text-muted); margin-bottom: 2rem; }
         .auth-form { display: flex; flex-direction: column; gap: 1.25rem; text-align: left; }
         .auth-buttons { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
 
-        /* --- Inputs & Boutons --- */
+        /* --- Inputs --- */
         .input-group label { display: block; font-size: 0.875rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem; }
-        .input-group input {
-            width: 100%; padding: 0.85rem 1rem; border: 1px solid var(--border-color);
-            border-radius: var(--radius-md); font-family: inherit; font-size: 1rem;
-            transition: var(--transition); background-color: #FAFAFA;
-        }
-        .input-group input:focus {
-            outline: none; border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(74, 93, 78, 0.1); background-color: #FFFFFF;
-        }
+        .input-group input { width: 100%; padding: 0.85rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: inherit; font-size: 1rem; transition: var(--transition); background-color: #FAFAFA; }
+        .input-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(74, 93, 78, 0.1); background-color: #FFFFFF; }
 
-        button {
-            padding: 0.85rem 1.5rem; border: none; border-radius: var(--radius-md);
-            font-family: inherit; font-weight: 600; font-size: 1rem; cursor: pointer;
-            transition: var(--transition); display: flex; justify-content: center; align-items: center; width: 100%;
-        }
-
+        button { padding: 0.85rem 1.5rem; border: none; border-radius: var(--radius-md); font-family: inherit; font-weight: 600; font-size: 1rem; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center; width: 100%; }
         .btn-primary { background-color: var(--primary); color: white; }
         .btn-primary:hover { background-color: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(74, 93, 78, 0.2); }
         .btn-outline { background-color: transparent; color: var(--primary); border: 1px solid var(--primary); }
@@ -111,16 +78,10 @@
         .btn-danger { background-color: transparent; color: var(--error); border: 1px solid var(--error); width: auto; padding: 0.5rem 1rem; font-size: 0.85rem; }
         .btn-danger:hover { background-color: #FEF2F2; }
 
-        /* --- Dashboard Header --- */
-        .app-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 2rem; background: var(--card-bg); padding: 1.5rem 2rem;
-            border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); flex-wrap: wrap; gap: 1rem;
-        }
+        /* --- Dashboard --- */
+        .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; background: var(--card-bg); padding: 1.5rem 2rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); flex-wrap: wrap; gap: 1rem; }
         .user-info h2 { font-size: 1.5rem; color: var(--primary); }
         .user-info p { color: var(--text-muted); font-size: 0.95rem; font-weight: 500; }
-
-        /* --- Layout Principal --- */
         .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
         @media (max-width: 992px) { .main-grid { grid-template-columns: 1fr; } }
         .section-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; }
@@ -137,7 +98,7 @@
         .notes-inputs.three-cols { grid-template-columns: 1fr 1fr 1fr; }
         .notes-inputs input { text-align: center; }
 
-        /* --- Panneau Résultats --- */
+        /* --- Résultats --- */
         .results-panel { background: var(--card-bg); border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-md); position: sticky; top: 2rem; }
         .general-avg-card { background: var(--primary); color: white; padding: 2rem; border-radius: var(--radius-md); text-align: center; margin-bottom: 1.5rem; }
         .avg-label { font-size: 1rem; font-weight: 500; opacity: 0.9; margin-bottom: 0.5rem; }
@@ -146,13 +107,12 @@
         .result-row { display: flex; justify-content: space-between; padding: 0.75rem; background: var(--bg-color); border-radius: var(--radius-md); margin-bottom: 0.5rem; font-size: 0.95rem; }
         .result-row span:last-child { font-weight: 700; color: var(--primary); }
 
-        /* --- Notifications & Loader --- */
+        /* --- Notifications --- */
         #toast-container { position: fixed; bottom: 2rem; right: 2rem; display: flex; flex-direction: column; gap: 1rem; z-index: 1000; }
         .toast { padding: 1rem 1.5rem; border-radius: var(--radius-md); background: white; box-shadow: var(--shadow-md); font-weight: 500; display: flex; gap: 0.75rem; transform: translateX(120%); opacity: 0; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
         .toast.show { transform: translateX(0); opacity: 1; }
         .toast.success { border-left: 4px solid var(--success); }
         .toast.error { border-left: 4px solid var(--error); }
-        
         #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px); z-index: 2000; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: 700; color: var(--primary); visibility: hidden; opacity: 0; transition: var(--transition); }
         #loading.active { visibility: visible; opacity: 1; }
     </style>
@@ -192,10 +152,7 @@
                 <h2>Mon Bulletin</h2>
                 <p id="welcome-message">Bienvenue</p>
             </div>
-            <button class="btn-danger" onclick="handleSignOut()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                Déconnexion
-            </button>
+            <button class="btn-danger" onclick="handleSignOut()">Déconnexion</button>
         </div>
 
         <div class="top-bar-app">
@@ -214,7 +171,6 @@
                 <h2 class="section-title">Saisie des notes (0 à 20)</h2>
                 <div class="subjects-grid" id="subjects-container"></div>
             </div>
-
             <div>
                 <div class="results-panel">
                     <h2 class="section-title">Résultats</h2>
@@ -230,11 +186,21 @@
     </div>
 
     <script>
-        // --- 1. Configuration Supabase ---
+        // --- DÉTECTEUR D'ERREURS POUR TÉLÉPHONE ---
+        window.onerror = function(message, source, lineno, colno, error) {
+            alert("Erreur détectée sur la page !\n" + message + "\nLigne : " + lineno);
+            return true; 
+        };
+
+        // --- 1. Configuration Supabase (avec tes clés exactes) ---
         const supabaseUrl = "https://exnrseyyxzqjhlabtesu.supabase.co";
         const supabaseKey = "sb_publishable_aAQhzHqknK1UKWRiLJur0w_E7jAXoDW";
+        
+        if (!window.supabase) {
+            alert("Erreur : Impossible de charger Supabase. Vérifiez votre connexion ou désactivez votre bloqueur de publicités.");
+        }
+        
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
         let currentUser = null;
 
         // --- 2. Configuration des matières ---
@@ -242,7 +208,7 @@
             { id: 'math', name: 'Mathématiques', coef: 5, inputs: ['ctrl1', 'ctrl2', 'ctrl3'] },
             { id: 'francais', name: 'Français', coef: 5, inputs: ['note1', 'note2'] },
             { id: 'arabe', name: 'Arabe', coef: 5, inputs: ['note1', 'note2'] },
-            { id: 'hg', name: 'Histoire-Géographie', coef: 3, inputs: ['note1', 'note2'] },
+            { id: 'hg', name: 'Histoire-Géo', coef: 3, inputs: ['note1', 'note2'] },
             { id: 'pc', name: 'Physique-Chimie', coef: 2, inputs: ['ctrl1', 'ctrl2', 'ctrl3'] },
             { id: 'is', name: 'IS', coef: 2, inputs: ['note1', 'note2'] },
             { id: 'anglais', name: 'Anglais', coef: 2, inputs: ['note1', 'note2'] },
@@ -250,12 +216,11 @@
             { id: 'informatique', name: 'Informatique', coef: 1, inputs: ['note1', 'note2'] }
         ];
 
-        // --- 3. Initialisation Robuste de l'Application ---
+        // --- 3. Initialisation ---
         async function initApp() {
             try {
-                initUI(); // Construit les formulaires
+                initUI();
                 
-                // Vérifier la session actuelle au démarrage
                 const { data: { session }, error } = await supabase.auth.getSession();
                 if (error) throw error;
 
@@ -263,11 +228,8 @@
                     currentUser = session.user;
                     showDashboard(currentUser.email);
                     loadUserData();
-                } else {
-                    showAuthScreen();
                 }
 
-                // Écouter les futurs changements (connexion/déconnexion)
                 supabase.auth.onAuthStateChange((event, newSession) => {
                     if (newSession && newSession.user) {
                         currentUser = newSession.user;
@@ -280,7 +242,7 @@
                 });
             } catch (err) {
                 console.error("Erreur d'initialisation :", err);
-                showAuthScreen(); // Sécurité : on affiche l'écran de connexion par défaut
+                alert("Erreur de connexion à Supabase : " + err.message);
             }
         }
 
@@ -288,27 +250,39 @@
         async function handleSignUp() {
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
-            if(!email || !password) return showToast("Veuillez remplir email et mot de passe", "error");
+            if(!email || !password) {
+                alert("Veuillez remplir l'email et le mot de passe.");
+                return;
+            }
 
             toggleLoading(true);
             const { data, error } = await supabase.auth.signUp({ email, password });
             toggleLoading(false);
 
-            if (error) showToast(error.message, "error");
-            else showToast("Compte créé avec succès ! Vous pouvez vous connecter.", "success");
+            if (error) {
+                alert("Erreur lors de la création : " + error.message);
+            } else {
+                alert("Compte créé avec succès ! Connectez-vous.");
+            }
         }
 
         async function handleSignIn() {
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
-            if(!email || !password) return showToast("Veuillez remplir email et mot de passe", "error");
+            if(!email || !password) {
+                alert("Veuillez remplir l'email et le mot de passe.");
+                return;
+            }
 
             toggleLoading(true);
             const { data, error } = await supabase.auth.signInWithPassword({ email, password });
             toggleLoading(false);
 
-            if (error) showToast("Identifiants incorrects ou compte inexistant", "error");
-            else showToast("Connexion réussie", "success");
+            if (error) {
+                alert("Identifiants incorrects : " + error.message);
+            } else {
+                showToast("Connexion réussie", "success");
+            }
         }
 
         async function handleSignOut() {
@@ -317,10 +291,10 @@
             toggleLoading(false);
             resetForm();
             document.getElementById('nom_eleve').value = '';
-            document.getElementById('auth-password').value = ''; // Vide le mot de passe
+            document.getElementById('auth-password').value = '';
         }
 
-        // --- 5. Gestion de l'Interface Visuelle ---
+        // --- 5. Interface ---
         function showAuthScreen() {
             document.getElementById('app-section').style.display = 'none';
             document.getElementById('auth-section').style.display = 'flex';
@@ -347,31 +321,16 @@
                     </div>
                 `).join('');
 
-                container.innerHTML += `
-                    <div class="subject-card">
-                        <div class="subject-header">
-                            <h3>${sub.name}</h3>
-                            <span class="coef-badge">Coef. ${sub.coef}</span>
-                        </div>
-                        <div class="notes-inputs ${isThreeCols}">${inputsHTML}</div>
-                    </div>
-                `;
-
-                resultsContainer.innerHTML += `
-                    <div class="result-row">
-                        <span>${sub.name}</span>
-                        <span id="res_${sub.id}">--</span>
-                    </div>
-                `;
+                container.innerHTML += `<div class="subject-card"><div class="subject-header"><h3>${sub.name}</h3><span class="coef-badge">Coef. ${sub.coef}</span></div><div class="notes-inputs ${isThreeCols}">${inputsHTML}</div></div>`;
+                resultsContainer.innerHTML += `<div class="result-row"><span>${sub.name}</span><span id="res_${sub.id}">--</span></div>`;
             });
             
-            // Écouteurs pour le calcul en temps réel
             document.querySelectorAll('input[type="number"]').forEach(input => {
                 input.addEventListener('input', runCalculationsOnly);
             });
         }
 
-        // --- 6. Logique Métier (Calculs & Base de données) ---
+        // --- 6. Logique & Base de données ---
         function runCalculationsOnly() {
             let totalPoints = 0, totalCoefs = 0, allValid = true, results = {};
 
@@ -400,7 +359,7 @@
             const genAvgEl = document.getElementById('moyenne-generale');
             const badgeEl = document.getElementById('appraisal-badge');
 
-            if (totalCoefs === 26) { // Somme de tous les coefficients
+            if (totalCoefs === 26) {
                 const genAvg = totalPoints / totalCoefs;
                 genAvgEl.innerText = genAvg.toFixed(2);
                 badgeEl.style.display = 'inline-block';
@@ -420,19 +379,16 @@
         }
 
         async function calculateAndSave() {
-            if (!currentUser) return showToast("Erreur : Vous devez être connecté.", "error");
+            if (!currentUser) { alert("Erreur : Vous n'êtes pas connecté."); return; }
 
             const nom_eleve = document.getElementById('nom_eleve').value.trim();
-            if(!nom_eleve) return showToast("Le nom de l'élève est requis.", "error");
+            if(!nom_eleve) { alert("Veuillez entrer le nom de l'élève avant de sauvegarder."); return; }
 
             const calc = runCalculationsOnly();
-            if (!calc.isValid) return showToast("Toutes les notes doivent être entre 0 et 20.", "error");
-            if (!calc.isComplete) return showToast("Veuillez remplir toutes les notes avant d'enregistrer.", "error");
+            if (!calc.isValid) { alert("Toutes les notes doivent être entre 0 et 20."); return; }
+            if (!calc.isComplete) { alert("Veuillez remplir toutes les notes avant d'enregistrer."); return; }
 
-            const payload = { 
-                user_id: currentUser.id,
-                nom_eleve: nom_eleve
-            };
+            const payload = { user_id: currentUser.id, nom_eleve: nom_eleve };
             
             subjectsConfig.forEach(sub => {
                 sub.inputs.forEach(inp => {
@@ -444,15 +400,11 @@
 
             toggleLoading(true);
             try {
-                const { error } = await supabase
-                    .from('notes_semestre')
-                    .upsert(payload, { onConflict: 'user_id' }); // Met à jour les notes de CE user_id
-
+                const { error } = await supabase.from('notes_semestre').upsert(payload, { onConflict: 'user_id' });
                 if (error) throw error;
-                showToast("Notes sauvegardées dans votre espace !", "success");
+                showToast("Notes sauvegardées dans la base de données !", "success");
             } catch (err) {
-                console.error("Erreur de sauvegarde :", err);
-                showToast("Erreur lors de la sauvegarde.", "error");
+                alert("Erreur de sauvegarde : " + err.message);
             } finally {
                 toggleLoading(false);
             }
@@ -462,13 +414,8 @@
             if(!currentUser) return;
             toggleLoading(true);
             try {
-                const { data, error } = await supabase
-                    .from('notes_semestre')
-                    .select('*')
-                    .eq('user_id', currentUser.id)
-                    .single();
-
-                if (error && error.code !== 'PGRST116') throw error; // Ignorer si aucune donnée
+                const { data, error } = await supabase.from('notes_semestre').select('*').eq('user_id', currentUser.id).single();
+                if (error && error.code !== 'PGRST116') throw error;
                 
                 if (data) {
                     if(data.nom_eleve) document.getElementById('nom_eleve').value = data.nom_eleve;
@@ -478,11 +425,10 @@
                             if (data[colName] !== null) document.getElementById(colName).value = data[colName];
                         });
                     });
-                    runCalculationsOnly(); // Met à jour les moyennes visuellement
+                    runCalculationsOnly();
                 }
             } catch (err) {
                 console.error("Erreur de chargement :", err);
-                showToast("Erreur de récupération de vos données.", "error");
             } finally {
                 toggleLoading(false);
             }
@@ -510,7 +456,7 @@
             else loader.classList.remove('active');
         }
 
-        // Lancement au chargement de la page
+        // Lancement !
         window.addEventListener('DOMContentLoaded', initApp);
 
     </script>
