@@ -37,7 +37,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden; /* Empêche le scroll horizontal */
+            overflow-x: hidden;
         }
 
         .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; width: 100%; }
@@ -80,7 +80,7 @@
         .user-info p { color: var(--text-muted); font-size: 0.95rem; font-weight: 500; }
         
         .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
-        .section-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; }
+        .section-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;}
         
         .top-bar-app { display: flex; gap: 1rem; margin-bottom: 2rem; justify-content: space-between; align-items: flex-end; }
         .top-bar-actions { display: flex; gap: 1rem; }
@@ -104,6 +104,19 @@
         .result-row { display: flex; justify-content: space-between; padding: 0.75rem; background: var(--bg-color); border-radius: var(--radius-md); margin-bottom: 0.5rem; font-size: 0.95rem; }
         .result-row span:last-child { font-weight: 700; color: var(--primary); }
 
+        /* --- Modal de configuration --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1500; display: none; justify-content: center; align-items: center; opacity: 0; transition: var(--transition); }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content { background: var(--card-bg); width: 90%; max-width: 600px; max-height: 90vh; border-radius: var(--radius-lg); padding: 2rem; overflow-y: auto; box-shadow: var(--shadow-md); transform: translateY(20px); transition: var(--transition); }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+        .modal-header h3 { font-size: 1.25rem; color: var(--primary); }
+        .close-btn { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; padding: 0; width: auto; }
+        .modal-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 1rem; align-items: center; margin-bottom: 1rem; background: var(--bg-color); padding: 0.75rem; border-radius: var(--radius-md); }
+        .modal-row input { padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 6px; text-align: center; }
+        .modal-row input[type="text"] { text-align: left; }
+        .btn-icon { background: var(--error); color: white; border-radius: 6px; width: 35px; height: 35px; padding: 0; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
+
         /* --- Notifications & Loading --- */
         #toast-container { position: fixed; bottom: 2rem; right: 2rem; display: flex; flex-direction: column; gap: 1rem; z-index: 1000; }
         .toast { padding: 1rem 1.5rem; border-radius: var(--radius-md); background: white; box-shadow: var(--shadow-md); font-weight: 500; display: flex; gap: 0.75rem; transform: translateX(120%); opacity: 0; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
@@ -114,39 +127,25 @@
         #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px); z-index: 2000; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: 700; color: var(--primary); visibility: hidden; opacity: 0; transition: var(--transition); }
         #loading.active { visibility: visible; opacity: 1; }
 
-        /* =========================================
-           ADAPTATION MOBILE & TABLETTE (RESPONSIVE)
-           ========================================= */
-        
-        /* Tablette (écrans moyens) */
         @media (max-width: 992px) { 
             .main-grid { grid-template-columns: 1fr; } 
             .results-panel { position: static; margin-top: 2rem; }
         }
 
-        /* Téléphones (petits écrans) */
         @media (max-width: 768px) {
             .container { padding: 1rem; }
             .auth-card { padding: 2rem 1.5rem; }
-            
             .app-header { flex-direction: column; text-align: center; gap: 1.5rem; padding: 1.5rem; }
             .app-header button { width: 100%; }
-
             .top-bar-app { flex-direction: column; align-items: stretch; gap: 1.5rem; }
             .top-bar-actions { flex-direction: column; width: 100%; }
             .top-bar-actions button { width: 100%; }
-            
-            .subjects-grid { grid-template-columns: 1fr; } /* Force 1 seule colonne de matières */
-            
+            .subjects-grid { grid-template-columns: 1fr; }
             .avg-value { font-size: 3rem; }
-            
             #toast-container { right: 1rem; left: 1rem; bottom: 1rem; align-items: center; }
             .toast { width: 100%; justify-content: center; }
-        }
-        
-        /* Très petits téléphones (iPhone SE, etc.) */
-        @media (max-width: 400px) {
-            .notes-inputs { grid-template-columns: repeat(2, 1fr); } /* Mets 2 notes par ligne si l'écran est minuscule */
+            .modal-row { grid-template-columns: 1fr; gap: 0.5rem; text-align: center; padding: 1rem; }
+            .btn-icon { width: 100%; margin-top: 0.5rem; }
         }
     </style>
 </head>
@@ -155,37 +154,37 @@
     <div id="loading">Veuillez patienter...</div>
     <div id="toast-container"></div>
 
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚙️ Configurer les matières</h3>
+                <button class="close-btn" onclick="closeSettings()">&times;</button>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">Modifie les noms, les coefficients, ou ajoute de nouvelles matières.</p>
+            
+            <div id="settings-subjects-list"></div>
+            
+            <button class="btn-outline" style="margin-top: 1rem;" onclick="addNewSubjectRow()">+ Ajouter une matière</button>
+            <button class="btn-primary" style="margin-top: 1.5rem;" onclick="saveSettings()">Appliquer les changements</button>
+        </div>
+    </div>
+
     <div id="auth-section" class="container auth-wrapper">
         <div class="auth-card">
             <h1>Massar Personnel</h1>
             <p>Connectez-vous pour accéder à vos résultats</p>
-            
             <div class="auth-form">
-                <div class="input-group">
-                    <label>Adresse e-mail</label>
-                    <input type="email" id="auth-email" placeholder="eleve@ecole.com">
-                </div>
-                <div class="input-group">
-                    <label>Mot de passe</label>
-                    <input type="password" id="auth-password" placeholder="••••••••">
-                </div>
-                
-                <div class="auth-buttons">
-                    <button class="btn-primary" onclick="seConnecter()">Se connecter</button>
-                    <button class="btn-outline" onclick="creerCompte()">Créer un compte</button>
-                </div>
+                <div class="input-group"><label>Adresse e-mail</label><input type="email" id="auth-email" placeholder="eleve@ecole.com"></div>
+                <div class="input-group"><label>Mot de passe</label><input type="password" id="auth-password" placeholder="••••••••"></div>
+                <div class="auth-buttons"><button class="btn-primary" onclick="seConnecter()">Se connecter</button><button class="btn-outline" onclick="creerCompte()">Créer un compte</button></div>
                 <div id="auth-message"></div>
             </div>
         </div>
     </div>
 
     <div id="app-section" class="container">
-        
         <div class="app-header">
-            <div class="user-info">
-                <h2>Mon Bulletin</h2>
-                <p id="welcome-message">Bienvenue</p>
-            </div>
+            <div class="user-info"><h2>Mon Bulletin</h2><p id="welcome-message">Bienvenue</p></div>
             <button class="btn-danger" onclick="seDeconnecter()">Déconnexion</button>
         </div>
 
@@ -195,14 +194,17 @@
                 <input type="text" id="nom_eleve" placeholder="Ex: Jean Dupont">
             </div>
             <div class="top-bar-actions">
-                <button class="btn-outline" onclick="effacerFormulaire()">Effacer les notes</button>
-                <button class="btn-primary" onclick="sauvegarderNotes()">Enregistrer</button>
+                <button class="btn-outline" onclick="openSettings()">⚙️ Gérer les matières</button>
+                <button class="btn-primary" onclick="sauvegarderNotes()">💾 Enregistrer</button>
             </div>
         </div>
 
         <div class="main-grid">
             <div>
-                <h2 class="section-title">Saisie des notes (0 à 20)</h2>
+                <div class="section-title">
+                    Saisie des notes (0 à 20)
+                    <button class="btn-outline" style="width: auto; padding: 0.4rem 1rem; font-size: 0.8rem;" onclick="effacerFormulaire()">Effacer tout</button>
+                </div>
                 <div class="subjects-grid" id="subjects-container"></div>
             </div>
             <div>
@@ -228,18 +230,26 @@
 
         let currentUser = null;
 
-        const subjectsConfig = [
-            { id: 'math', name: 'Mathématiques', coef: 5, inputs: ['ctrl1', 'ctrl2', 'ctrl3', 'activite'] },
-            { id: 'francais', name: 'Français', coef: 5, inputs: ['note1', 'note2', 'activite'] },
-            { id: 'arabe', name: 'Arabe', coef: 5, inputs: ['note1', 'note2', 'activite'] },
-            { id: 'hg', name: 'Histoire-Géo', coef: 3, inputs: ['note1', 'note2', 'activite'] },
-            { id: 'pc', name: 'Physique-Chimie', coef: 2, inputs: ['ctrl1', 'ctrl2', 'ctrl3', 'activite'] },
-            { id: 'is', name: 'IS', coef: 2, inputs: ['note1', 'note2', 'activite'] },
-            { id: 'anglais', name: 'Anglais', coef: 2, inputs: ['note1', 'note2', 'activite'] },
-            { id: 'eps', name: 'EPS', coef: 1, inputs: ['note1', 'note2', 'activite'] },
-            { id: 'informatique', name: 'Informatique', coef: 1, inputs: ['note1', 'note2', 'activite'] }
+        // Configuration par défaut (sera écrasée par celle de la DB si modifiée)
+        let subjectsConfig = [
+            { id: 'math', name: 'Mathématiques', coef: 5 },
+            { id: 'francais', name: 'Français', coef: 5 },
+            { id: 'arabe', name: 'Arabe', coef: 5 },
+            { id: 'hg', name: 'Histoire-Géo', coef: 3 },
+            { id: 'pc', name: 'Physique-Chimie', coef: 2 },
+            { id: 'is', name: 'IS', coef: 2 },
+            { id: 'anglais', name: 'Anglais', coef: 2 },
+            { id: 'eps', name: 'EPS', coef: 1 },
+            { id: 'informatique', name: 'Informatique', coef: 1 }
         ];
 
+        // Format standard pour toutes les matières : 3 notes + 1 activité
+        const standardInputs = ['note1', 'note2', 'note3', 'activite'];
+        
+        // Stockage en direct des notes
+        let notesData = {}; 
+
+        // --- UTILITAIRES ---
         function toggleLoading(show) { document.getElementById('loading').classList.toggle('active', show); }
         function showToast(message, type) {
             const container = document.getElementById('toast-container');
@@ -253,22 +263,24 @@
         function showAuthScreen() { document.getElementById('app-section').style.display = 'none'; document.getElementById('auth-section').style.display = 'flex'; }
         function showDashboard(email) { document.getElementById('auth-section').style.display = 'none'; document.getElementById('app-section').style.display = 'block'; document.getElementById('welcome-message').innerText = `Connecté en tant que : ${email}`; }
         function setAuthMessage(text, color) { const msgBox = document.getElementById('auth-message'); msgBox.innerText = text; msgBox.style.color = color; }
+        function generateId() { return 'sub_' + Math.random().toString(36).substr(2, 9); }
 
+        // --- AUTHENTIFICATION ---
         window.creerCompte = async function() {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value;
             if (!email || !password) { setAuthMessage("⚠️ Remplis l'email et le mot de passe.", "red"); return; }
-            setAuthMessage("⏳ Création en cours...", "#D97706"); toggleLoading(true);
+            setAuthMessage("⏳ Création...", "#D97706"); toggleLoading(true);
             const { data, error } = await supabase.auth.signUp({ email, password });
             toggleLoading(false);
-            if (error) { setAuthMessage("❌ Erreur : " + error.message, "red"); } else { setAuthMessage("✅ Compte créé ! Tu peux maintenant te connecter.", "green"); }
+            if (error) { setAuthMessage("❌ Erreur : " + error.message, "red"); } else { setAuthMessage("✅ Compte créé ! Connecte-toi.", "green"); }
         };
 
         window.seConnecter = async function() {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value;
             if (!email || !password) { setAuthMessage("⚠️ Remplis l'email et le mot de passe.", "red"); return; }
-            setAuthMessage("⏳ Connexion en cours...", "#D97706"); toggleLoading(true);
+            setAuthMessage("⏳ Connexion...", "#D97706"); toggleLoading(true);
             const { data, error } = await supabase.auth.signInWithPassword({ email, password });
             toggleLoading(false);
             if (error) { setAuthMessage("❌ Identifiants incorrects.", "red"); }
@@ -276,29 +288,91 @@
 
         window.seDeconnecter = async function() {
             toggleLoading(true); await supabase.auth.signOut(); toggleLoading(false);
-            window.effacerFormulaire(); document.getElementById('nom_eleve').value = ''; document.getElementById('auth-password').value = ''; setAuthMessage("", "black");
+            notesData = {}; window.effacerFormulaire(); document.getElementById('nom_eleve').value = ''; document.getElementById('auth-password').value = ''; setAuthMessage("", "black");
         };
 
+        // --- GESTION DES MATIÈRES (MODAL) ---
+        window.openSettings = function() {
+            const list = document.getElementById('settings-subjects-list');
+            list.innerHTML = '';
+            subjectsConfig.forEach(sub => {
+                list.insertAdjacentHTML('beforeend', `
+                    <div class="modal-row" id="row_${sub.id}">
+                        <input type="text" class="set-name" value="${sub.name}" placeholder="Nom de la matière">
+                        <input type="number" class="set-coef" value="${sub.coef}" min="1" placeholder="Coef">
+                        <button class="btn-icon" onclick="document.getElementById('row_${sub.id}').remove()">×</button>
+                        <input type="hidden" class="set-id" value="${sub.id}">
+                    </div>
+                `);
+            });
+            document.getElementById('settings-modal').classList.add('active');
+        };
+
+        window.closeSettings = function() { document.getElementById('settings-modal').classList.remove('active'); };
+
+        window.addNewSubjectRow = function() {
+            const newId = generateId();
+            document.getElementById('settings-subjects-list').insertAdjacentHTML('beforeend', `
+                <div class="modal-row" id="row_${newId}">
+                    <input type="text" class="set-name" value="Nouvelle Matière" placeholder="Nom de la matière">
+                    <input type="number" class="set-coef" value="1" min="1" placeholder="Coef">
+                    <button class="btn-icon" onclick="document.getElementById('row_${newId}').remove()">×</button>
+                    <input type="hidden" class="set-id" value="${newId}">
+                </div>
+            `);
+        };
+
+        window.saveSettings = async function() {
+            const rows = document.querySelectorAll('.modal-row');
+            let newConfig = [];
+            
+            rows.forEach(row => {
+                const id = row.querySelector('.set-id').value;
+                const name = row.querySelector('.set-name').value.trim();
+                const coef = parseFloat(row.querySelector('.set-coef').value) || 1;
+                if(name) newConfig.push({ id, name, coef });
+            });
+
+            if(newConfig.length === 0) { alert("Il faut au moins une matière !"); return; }
+            
+            subjectsConfig = newConfig;
+            closeSettings();
+            
+            // Sauvegarde immédiate de la structure dans Supabase
+            if (currentUser) {
+                toggleLoading(true);
+                await supabase.from('notes_semestre').upsert({ 
+                    user_id: currentUser.id, 
+                    config_matieres: subjectsConfig 
+                }, { onConflict: 'user_id' });
+                toggleLoading(false);
+            }
+            
+            initUI(); // Recharger l'affichage
+            showToast("✅ Configuration mise à jour", "success");
+        };
+
+        // --- GESTION DE L'AFFICHAGE & CALCULS ---
         function initUI() {
+            // Sauvegarder les notes actuelles tapées avant de redessiner
+            document.querySelectorAll('input[type="number"][id*="_"]').forEach(input => {
+                if(input.value) notesData[input.id] = parseFloat(input.value);
+            });
+
             const container = document.getElementById('subjects-container');
             const resultsContainer = document.getElementById('results-container');
             container.innerHTML = ''; resultsContainer.innerHTML = '';
             
             subjectsConfig.forEach(sub => {
-                const inputsHTML = sub.inputs.map((inp, idx) => {
-                    let labelText = '';
-                    if (inp === 'activite') {
-                        labelText = 'Activité';
-                    } else if (inp.includes('ctrl')) {
-                        labelText = `Ctrl ${idx + 1}`;
-                    } else {
-                        labelText = `Note ${idx + 1}`;
-                    }
-
+                const inputsHTML = standardInputs.map((inp, idx) => {
+                    let labelText = (inp === 'activite') ? 'Activité' : `Note ${idx + 1}`;
+                    const inputId = `${sub.id}_${inp}`;
+                    const existingValue = notesData[inputId] !== undefined ? notesData[inputId] : '';
+                    
                     return `
                     <div class="input-group">
                         <label style="font-size: 0.8rem; text-align: center;">${labelText}</label>
-                        <input type="number" id="${sub.id}_${inp}" min="0" max="20" step="0.25" placeholder="-" inputmode="decimal">
+                        <input type="number" id="${inputId}" min="0" max="20" step="0.25" placeholder="-" inputmode="decimal" value="${existingValue}">
                     </div>
                     `;
                 }).join('');
@@ -307,27 +381,32 @@
                 resultsContainer.innerHTML += `<div class="result-row"><span>${sub.name}</span><span id="res_${sub.id}">--</span></div>`;
             });
             
-            document.querySelectorAll('input[type="number"]').forEach(input => { input.addEventListener('input', runCalculationsOnly); });
+            document.querySelectorAll('input[type="number"]').forEach(input => { input.addEventListener('input', runCalculations); });
+            runCalculations();
         }
 
-        function runCalculationsOnly() {
-            let totalPoints = 0, totalCoefs = 0, allValid = true, results = {};
-            let hasAtLeastOneGrade = false;
+        function runCalculations() {
+            let totalPoints = 0, totalCoefs = 0, allValid = true;
+            notesData = {}; // Reset et maj avec le DOM actuel
 
             subjectsConfig.forEach(sub => {
                 let sum = 0, count = 0;
-                sub.inputs.forEach(inp => {
-                    const val = document.getElementById(`${sub.id}_${inp}`).value;
+                standardInputs.forEach(inp => {
+                    const inputEl = document.getElementById(`${sub.id}_${inp}`);
+                    if(!inputEl) return;
+                    
+                    const val = inputEl.value;
                     if (val !== "") {
                         const num = parseFloat(val);
-                        if (num >= 0 && num <= 20) { sum += num; count++; hasAtLeastOneGrade = true; } 
-                        else { allValid = false; }
+                        if (num >= 0 && num <= 20) { 
+                            sum += num; count++; 
+                            notesData[`${sub.id}_${inp}`] = num;
+                        } else { allValid = false; }
                     }
                 });
 
                 if (count > 0) {
                     const avg = sum / count;
-                    results[sub.id] = avg;
                     document.getElementById(`res_${sub.id}`).innerText = avg.toFixed(2);
                     totalPoints += (avg * sub.coef);
                     totalCoefs += sub.coef;
@@ -350,7 +429,7 @@
                 else if (genAvg >= 10) { badgeEl.innerText = 'Passable'; badgeEl.style.color = '#fff'; }
                 else { badgeEl.innerText = 'Insuffisant'; badgeEl.style.color = '#FFD1D1'; }
                 
-                return { isValid: allValid, averages: results, general: genAvg, hasData: true };
+                return { isValid: allValid, hasData: true };
             } else {
                 genAvgEl.innerText = '--';
                 badgeEl.style.display = 'none';
@@ -360,7 +439,8 @@
 
         window.effacerFormulaire = function() {
             document.querySelectorAll('.notes-inputs input').forEach(input => input.value = '');
-            runCalculationsOnly();
+            notesData = {};
+            runCalculations();
         };
 
         window.sauvegarderNotes = async function() {
@@ -369,27 +449,24 @@
             const nom_eleve = document.getElementById('nom_eleve').value.trim();
             if(!nom_eleve) { alert("Veuillez entrer le nom de l'élève en haut."); return; }
 
-            const calc = runCalculationsOnly();
+            const calc = runCalculations();
             if (!calc.isValid) { alert("Les notes saisies doivent être entre 0 et 20."); return; }
-
-            const payload = { user_id: currentUser.id, nom_eleve: nom_eleve };
-            
-            subjectsConfig.forEach(sub => {
-                sub.inputs.forEach(inp => {
-                    const val = document.getElementById(`${sub.id}_${inp}`).value;
-                    payload[`${sub.id}_${inp}`] = val !== "" ? parseFloat(val) : null;
-                });
-                payload[`moyenne_${sub.id}`] = calc.averages[sub.id] !== undefined ? parseFloat(calc.averages[sub.id].toFixed(2)) : null;
-            });
-            payload.moyenne_generale = calc.hasData ? parseFloat(calc.general.toFixed(2)) : null;
 
             toggleLoading(true);
             try {
+                // On sauvegarde le config + le dict des notes en JSON
+                const payload = { 
+                    user_id: currentUser.id, 
+                    nom_eleve: nom_eleve,
+                    config_matieres: subjectsConfig,
+                    notes_valeurs: notesData
+                };
+                
                 const { error } = await supabase.from('notes_semestre').upsert(payload, { onConflict: 'user_id' });
                 if (error) throw error;
-                showToast("✅ Notes sauvegardées !", "success");
+                showToast("✅ Bulletin sauvegardé !", "success");
             } catch (err) {
-                alert("Erreur de sauvegarde : " + err.message);
+                alert("Erreur : " + err.message);
             } finally {
                 toggleLoading(false);
             }
@@ -404,24 +481,28 @@
                 
                 if (data) {
                     if(data.nom_eleve) document.getElementById('nom_eleve').value = data.nom_eleve;
-                    subjectsConfig.forEach(sub => {
-                        sub.inputs.forEach(inp => {
-                            const colName = `${sub.id}_${inp}`;
-                            if (data[colName] !== null && data[colName] !== undefined) {
-                                document.getElementById(colName).value = data[colName];
-                            }
-                        });
-                    });
-                    runCalculationsOnly();
+                    
+                    // Récupérer la config personnalisée si elle existe
+                    if(data.config_matieres && data.config_matieres.length > 0) {
+                        subjectsConfig = data.config_matieres;
+                    }
+
+                    // Récupérer les notes depuis le JSON
+                    if(data.notes_valeurs) {
+                        notesData = data.notes_valeurs;
+                    }
+                    
+                    initUI(); // Dessiner avec les bonnes data
+                } else {
+                    initUI(); // Nv user
                 }
             } catch (err) {
                 console.error("Erreur de chargement :", err);
+                initUI();
             } finally {
                 toggleLoading(false);
             }
         }
-
-        initUI();
 
         supabase.auth.onAuthStateChange((event, session) => {
             if (session && session.user) {
