@@ -61,7 +61,7 @@
 
         /* --- Inputs --- */
         .input-group label { display: block; font-size: 0.875rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem; }
-        .input-group input { width: 100%; padding: 0.85rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: inherit; font-size: 1rem; transition: var(--transition); background-color: #FAFAFA; }
+        .input-group input { width: 100%; padding: 0.85rem 0.5rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: inherit; font-size: 1rem; transition: var(--transition); background-color: #FAFAFA; text-align: center; }
         .input-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(74, 93, 78, 0.1); background-color: #FFFFFF; }
 
         button { padding: 0.85rem 1.5rem; border: none; border-radius: var(--radius-md); font-family: inherit; font-weight: 600; font-size: 1rem; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center; width: 100%; }
@@ -82,15 +82,15 @@
         .top-bar-app { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; }
 
         /* --- Cartes Matières --- */
-        .subjects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        .subjects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
         .subject-card { background: var(--card-bg); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm); border: 1px solid transparent; transition: var(--transition); }
         .subject-card:hover { box-shadow: var(--shadow-md); border-color: var(--border-color); }
         .subject-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
         .subject-header h3 { font-size: 1.1rem; font-weight: 600; }
         .coef-badge { background: var(--bg-color); color: var(--primary); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
-        .notes-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .notes-inputs.three-cols { grid-template-columns: 1fr 1fr 1fr; }
-        .notes-inputs input { text-align: center; }
+        
+        /* Grille flexible pour les notes (3 ou 4 colonnes selon la matière) */
+        .notes-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(65px, 1fr)); gap: 0.75rem; }
 
         /* --- Résultats --- */
         .results-panel { background: var(--card-bg); border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-md); position: sticky; top: 2rem; }
@@ -191,17 +191,17 @@
 
         let currentUser = null;
 
-        // 2. Configuration des matières
+        // 2. Configuration des matières (Ajout de 'activite' partout)
         const subjectsConfig = [
-            { id: 'math', name: 'Mathématiques', coef: 5, inputs: ['ctrl1', 'ctrl2', 'ctrl3'] },
-            { id: 'francais', name: 'Français', coef: 5, inputs: ['note1', 'note2'] },
-            { id: 'arabe', name: 'Arabe', coef: 5, inputs: ['note1', 'note2'] },
-            { id: 'hg', name: 'Histoire-Géo', coef: 3, inputs: ['note1', 'note2'] },
-            { id: 'pc', name: 'Physique-Chimie', coef: 2, inputs: ['ctrl1', 'ctrl2', 'ctrl3'] },
-            { id: 'is', name: 'IS', coef: 2, inputs: ['note1', 'note2'] },
-            { id: 'anglais', name: 'Anglais', coef: 2, inputs: ['note1', 'note2'] },
-            { id: 'eps', name: 'EPS', coef: 1, inputs: ['note1', 'note2'] },
-            { id: 'informatique', name: 'Informatique', coef: 1, inputs: ['note1', 'note2'] }
+            { id: 'math', name: 'Mathématiques', coef: 5, inputs: ['ctrl1', 'ctrl2', 'ctrl3', 'activite'] },
+            { id: 'francais', name: 'Français', coef: 5, inputs: ['note1', 'note2', 'activite'] },
+            { id: 'arabe', name: 'Arabe', coef: 5, inputs: ['note1', 'note2', 'activite'] },
+            { id: 'hg', name: 'Histoire-Géo', coef: 3, inputs: ['note1', 'note2', 'activite'] },
+            { id: 'pc', name: 'Physique-Chimie', coef: 2, inputs: ['ctrl1', 'ctrl2', 'ctrl3', 'activite'] },
+            { id: 'is', name: 'IS', coef: 2, inputs: ['note1', 'note2', 'activite'] },
+            { id: 'anglais', name: 'Anglais', coef: 2, inputs: ['note1', 'note2', 'activite'] },
+            { id: 'eps', name: 'EPS', coef: 1, inputs: ['note1', 'note2', 'activite'] },
+            { id: 'informatique', name: 'Informatique', coef: 1, inputs: ['note1', 'note2', 'activite'] }
         ];
 
         // --- GESTION DE L'AFFICHAGE ---
@@ -252,21 +252,32 @@
             container.innerHTML = ''; resultsContainer.innerHTML = '';
             
             subjectsConfig.forEach(sub => {
-                const isThreeCols = sub.inputs.length === 3 ? 'three-cols' : '';
-                const inputsHTML = sub.inputs.map((inp, idx) => `
+                const inputsHTML = sub.inputs.map((inp, idx) => {
+                    // Logique pour déterminer le nom du label au-dessus de la case
+                    let labelText = '';
+                    if (inp === 'activite') {
+                        labelText = 'Activité';
+                    } else if (inp.includes('ctrl')) {
+                        labelText = `Ctrl ${idx + 1}`;
+                    } else {
+                        labelText = `Note ${idx + 1}`;
+                    }
+
+                    return `
                     <div class="input-group">
-                        <label>${inp.includes('ctrl') ? 'Ctrl' : 'Note'} ${idx + 1}</label>
+                        <label style="font-size: 0.8rem; text-align: center;">${labelText}</label>
                         <input type="number" id="${sub.id}_${inp}" min="0" max="20" step="0.25" placeholder="-">
                     </div>
-                `).join('');
-                container.innerHTML += `<div class="subject-card"><div class="subject-header"><h3>${sub.name}</h3><span class="coef-badge">Coef. ${sub.coef}</span></div><div class="notes-inputs ${isThreeCols}">${inputsHTML}</div></div>`;
+                    `;
+                }).join('');
+
+                container.innerHTML += `<div class="subject-card"><div class="subject-header"><h3>${sub.name}</h3><span class="coef-badge">Coef. ${sub.coef}</span></div><div class="notes-inputs">${inputsHTML}</div></div>`;
                 resultsContainer.innerHTML += `<div class="result-row"><span>${sub.name}</span><span id="res_${sub.id}">--</span></div>`;
             });
             
             document.querySelectorAll('input[type="number"]').forEach(input => { input.addEventListener('input', runCalculationsOnly); });
         }
 
-        // NOUVEAU SYSTÈME DE CALCUL : Fonctionne même si des notes manquent !
         function runCalculationsOnly() {
             let totalPoints = 0, totalCoefs = 0, allValid = true, results = {};
             let hasAtLeastOneGrade = false;
@@ -282,7 +293,7 @@
                     }
                 });
 
-                if (count > 0) { // Calcule la moyenne de la matière même si on a qu'une seule note
+                if (count > 0) {
                     const avg = sum / count;
                     results[sub.id] = avg;
                     document.getElementById(`res_${sub.id}`).innerText = avg.toFixed(2);
@@ -296,7 +307,7 @@
             const genAvgEl = document.getElementById('moyenne-generale');
             const badgeEl = document.getElementById('appraisal-badge');
 
-            if (totalCoefs > 0) { // Calcule la moyenne générale avec les coefficients des matières remplies
+            if (totalCoefs > 0) {
                 const genAvg = totalPoints / totalCoefs;
                 genAvgEl.innerText = genAvg.toFixed(2);
                 badgeEl.style.display = 'inline-block';
@@ -331,7 +342,6 @@
 
             const payload = { user_id: currentUser.id, nom_eleve: nom_eleve };
             
-            // On envoie 'null' à la base de données pour les cases vides
             subjectsConfig.forEach(sub => {
                 sub.inputs.forEach(inp => {
                     const val = document.getElementById(`${sub.id}_${inp}`).value;
@@ -365,13 +375,12 @@
                     subjectsConfig.forEach(sub => {
                         sub.inputs.forEach(inp => {
                             const colName = `${sub.id}_${inp}`;
-                            // Ne remplit la case que s'il y a une vraie note enregistrée
                             if (data[colName] !== null && data[colName] !== undefined) {
                                 document.getElementById(colName).value = data[colName];
                             }
                         });
                     });
-                    runCalculationsOnly(); // Recalcule l'affichage avec les notes chargées
+                    runCalculationsOnly();
                 }
             } catch (err) {
                 console.error("Erreur de chargement :", err);
