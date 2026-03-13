@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2" crossorigin="anonymous"></script>
 
     <style>
         :root {
@@ -186,9 +186,13 @@
     </div>
 
     <script>
-        // --- DÉTECTEUR D'ERREURS ---
+        // --- DÉTECTEUR D'ERREURS AMÉLIORÉ ---
         window.onerror = function(message, source, lineno, colno, error) {
-            alert("Erreur détectée sur la page !\n" + message + "\nLigne : " + lineno);
+            if (message.includes("Script error")) {
+                alert("🚨 Attention : Le réseau de votre téléphone bloque la base de données. Essayez de passer en 4G ou d'utiliser un autre navigateur (Chrome).");
+            } else {
+                alert("Erreur : " + message + "\nLigne : " + lineno);
+            }
             return true; 
         };
 
@@ -196,12 +200,15 @@
         const supabaseUrl = "https://exnrseyyxzqjhlabtesu.supabase.co";
         const supabaseKey = "sb_publishable_aAQhzHqknK1UKWRiLJur0w_E7jAXoDW";
         
-        if (!window.supabase) {
-            alert("Erreur : Impossible de charger Supabase. Vérifiez votre connexion.");
-        }
-        
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        let supabase = null;
         let currentUser = null;
+
+        // Sécurisation de l'initialisation pour éviter le "plantage silencieux"
+        if (!window.supabase) {
+            console.warn("Supabase n'a pas pu être chargé depuis le serveur externe.");
+        } else {
+            supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        }
 
         // --- Configuration des matières ---
         const subjectsConfig = [
@@ -218,6 +225,7 @@
 
         // --- Initialisation ---
         async function initApp() {
+            if (!supabase) return; // Empêche le plantage si bloqué
             try {
                 initUI();
                 
@@ -242,12 +250,13 @@
                 });
             } catch (err) {
                 console.error("Erreur d'initialisation :", err);
-                alert("Erreur de connexion à Supabase : " + err.message);
             }
         }
 
         // --- Fonctions d'Authentification ---
         async function handleSignUp() {
+            if (!supabase) { alert("Base de données bloquée par le navigateur."); return; }
+            
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
             if(!email || !password) {
@@ -267,6 +276,8 @@
         }
 
         async function handleSignIn() {
+            if (!supabase) { alert("Base de données bloquée par le navigateur."); return; }
+
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
             if(!email || !password) {
@@ -286,6 +297,7 @@
         }
 
         async function handleSignOut() {
+            if (!supabase) return;
             toggleLoading(true);
             await supabase.auth.signOut();
             toggleLoading(false);
@@ -379,6 +391,7 @@
         }
 
         async function calculateAndSave() {
+            if (!supabase) { alert("Erreur : Base de données inaccessible."); return; }
             if (!currentUser) { alert("Erreur : Vous n'êtes pas connecté."); return; }
 
             const nom_eleve = document.getElementById('nom_eleve').value.trim();
@@ -411,7 +424,7 @@
         }
 
         async function loadUserData() {
-            if(!currentUser) return;
+            if(!currentUser || !supabase) return;
             toggleLoading(true);
             try {
                 const { data, error } = await supabase.from('notes_semestre').select('*').eq('user_id', currentUser.id).single();
