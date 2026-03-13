@@ -3,54 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Massar Personnel - Test</title>
+    <title>Connexion Massar</title>
     
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
-        /* Styles de base pour que ça soit joli */
-        body {
-            font-family: sans-serif;
-            background-color: #F5F3ED;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .auth-card {
-            background: white;
-            padding: 3rem;
-            border-radius: 20px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-        .input-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .input-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 16px;
-        }
+        body { font-family: sans-serif; background-color: #F5F3ED; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 350px; text-align: center; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; }
         .btn-primary { background-color: #4A5D4E; color: white; }
         .btn-outline { background-color: transparent; border: 2px solid #4A5D4E; color: #4A5D4E; }
     </style>
@@ -58,35 +21,70 @@
 <body>
 
     <div class="auth-card">
-        <h1>Étape 1</h1>
-        <p>Test des boutons</p>
+        <h2>Espace Élève</h2>
         
         <div class="input-group">
-            <label>Adresse e-mail</label>
-            <input type="email" id="auth-email" placeholder="test@ecole.com">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="eleve@ecole.com">
         </div>
         <div class="input-group">
             <label>Mot de passe</label>
-            <input type="password" id="auth-password" placeholder="••••••••">
+            <input type="password" id="password" placeholder="••••••••">
         </div>
         
-        <button class="btn-primary" onclick="testConnexion()">Se connecter</button>
-        <button class="btn-outline" onclick="testInscription()">Créer un compte</button>
+        <button class="btn-primary" onclick="seConnecter()">Se connecter</button>
+        <button class="btn-outline" onclick="creerCompte()">Créer un compte</button>
     </div>
 
     <script>
-        // Fonction très simple pour tester le bouton "Se connecter"
-        function testConnexion() {
-            const email = document.getElementById('auth-email').value;
-            alert("✅ Le bouton SE CONNECTER marche !\nEmail tapé : " + email);
+        // 1. Connexion à ta base de données Supabase
+        const supabaseUrl = 'https://exnrseyyxzqjhlabtesu.supabase.co';
+        const supabaseKey = 'sb_publishable_aAQhzHqknK1UKWRiLJur0w_E7jAXoDW';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // 2. Fonction pour créer un compte
+        async function creerCompte() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                alert("Veuillez remplir l'email et le mot de passe.");
+                return;
+            }
+
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                alert("Erreur Supabase (Création) : " + error.message);
+            } else {
+                alert("Compte créé avec succès ! Tu peux maintenant te connecter.");
+            }
         }
 
-        // Fonction très simple pour tester le bouton "Créer un compte"
-        function testInscription() {
-            const email = document.getElementById('auth-email').value;
-            alert("✅ Le bouton CRÉER UN COMPTE marche !\nEmail tapé : " + email);
+        // 3. Fonction pour se connecter
+        async function seConnecter() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                alert("Veuillez remplir l'email et le mot de passe.");
+                return;
+            }
+
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                alert("Erreur Supabase (Connexion) : " + error.message);
+            } else {
+                alert("Connexion réussie ! Bienvenue " + data.user.email);
+            }
         }
     </script>
-
 </body>
 </html>
