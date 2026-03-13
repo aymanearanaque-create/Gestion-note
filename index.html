@@ -191,7 +191,7 @@
 
         let currentUser = null;
 
-        // 2. Configuration des matières (Ajout de 'activite' partout)
+        // 2. Configuration des matières
         const subjectsConfig = [
             { id: 'math', name: 'Mathématiques', coef: 5, inputs: ['ctrl1', 'ctrl2', 'ctrl3', 'activite'] },
             { id: 'francais', name: 'Français', coef: 5, inputs: ['note1', 'note2', 'activite'] },
@@ -253,7 +253,6 @@
             
             subjectsConfig.forEach(sub => {
                 const inputsHTML = sub.inputs.map((inp, idx) => {
-                    // Logique pour déterminer le nom du label au-dessus de la case
                     let labelText = '';
                     if (inp === 'activite') {
                         labelText = 'Activité';
@@ -263,10 +262,11 @@
                         labelText = `Note ${idx + 1}`;
                     }
 
+                    // Ajout de inputmode="decimal" pour forcer le clavier numérique sur mobile
                     return `
                     <div class="input-group">
                         <label style="font-size: 0.8rem; text-align: center;">${labelText}</label>
-                        <input type="number" id="${sub.id}_${inp}" min="0" max="20" step="0.25" placeholder="-">
+                        <input type="number" id="${sub.id}_${inp}" min="0" max="20" step="0.25" placeholder="-" inputmode="decimal">
                     </div>
                     `;
                 }).join('');
